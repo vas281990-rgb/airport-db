@@ -1,6 +1,9 @@
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import DeclarativeBase
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
 
 # Import all models here so SQLAlchemy can see them
-from app.models.airport import Airport  # noqa
+from app.models.airport import Airport  # noqa: F401
+from app.models.flight import Flight  # noqa: F401
