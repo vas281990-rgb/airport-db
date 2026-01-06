@@ -1,12 +1,18 @@
 from fastapi import FastAPI
-from app.database import Base, engine
+
+from app.db.base import Base
+from app.db.session import engine
+from app.routers import airport
 
 app = FastAPI(title="Airport Database API")
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+
+@app.on_event("startup")
+def on_startup():
+    """
+    Create database tables on application startup.
+    """
+    Base.metadata.create_all(bind=engine)
 
 
-@app.get("/")
-def root():
-    return {"status": "Airport API is running"}
+app.include_router(airport.router)
