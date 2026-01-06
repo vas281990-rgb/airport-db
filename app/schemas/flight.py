@@ -1,18 +1,37 @@
+from datetime import datetime
 from pydantic import BaseModel
+
+from app.schemas.airport import AirportRead
 
 
 class FlightBase(BaseModel):
     flight_number: str
-    destination: str
+    departure_time: datetime
+    arrival_time: datetime
+    departure_airport_id: int
+    arrival_airport_id: int
 
 
 class FlightCreate(FlightBase):
-    airport_id: int
+    """
+    Schema for creating a flight.
+    """
+    pass
 
 
-class FlightRead(FlightBase):
+class FlightRead(BaseModel):
+    """
+    Schema for reading flight data.
+    Includes nested airport information.
+    """
+
     id: int
-    airport_id: int
+    flight_number: str
+    departure_time: datetime
+    arrival_time: datetime
+
+    departure_airport: AirportRead
+    arrival_airport: AirportRead
 
     class Config:
-        orm_mode = True
+        from_attributes = True
