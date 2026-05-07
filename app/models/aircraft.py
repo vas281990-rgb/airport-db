@@ -13,9 +13,9 @@ class Aircraft(Base):
     id = Column(Integer, primary_key=True, index=True)
     model = Column(String, nullable=False)           # "Boeing 737-800"
     capacity = Column(Integer, nullable=False)        # 189
-    icao_code = Column(String(10), nullable=True)     # "B738" — опционально
+    icao_code = Column(String(10), nullable=True)     
 
-    # один самолёт → много рейсов
+    # one plane → many flights
     flights = relationship(
         "Flight",
         back_populates="aircraft",

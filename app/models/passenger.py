@@ -10,7 +10,7 @@ class Passenger(Base):
     first_name = Column(String, nullable=False)
     last_name  = Column(String, nullable=False)
 
-    # уникальный — нельзя зарегистрировать одного пассажира дважды
+    # unique  — one passenger only once
     passport_number = Column(String, unique=True, nullable=False, index=True)
     email = Column(String, nullable=True)
     phone = Column(String, nullable=True)
@@ -19,5 +19,5 @@ class Passenger(Base):
 
     @property
     def full_name(self) -> str:
-        # не колонка в БД — просто удобный атрибут
+        # not a db column, just an attribute
         return f"{self.first_name} {self.last_name}"

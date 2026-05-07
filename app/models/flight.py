@@ -6,13 +6,13 @@ from app.db.base import Base
 
 
 class FlightStatus(str, enum.Enum):
-    """Все возможные статусы рейса."""
-    SCHEDULED = "scheduled"   # запланирован
-    BOARDING  = "boarding"    # идёт посадка
-    DEPARTED  = "departed"    # вылетел
-    ARRIVED   = "arrived"     # прилетел
-    CANCELLED = "cancelled"   # отменён
-    DELAYED   = "delayed"     # задержан
+    """All possible status."""
+    SCHEDULED = "scheduled"   
+    BOARDING  = "boarding"   
+    DEPARTED  = "departed"   
+    ARRIVED   = "arrived"     
+    CANCELLED = "cancelled" 
+    DELAYED   = "delayed"   
 
 
 class Flight(Base):
@@ -27,7 +27,7 @@ class Flight(Base):
     arrival_airport_id   = Column(Integer, ForeignKey("airports.id",  ondelete="CASCADE"), nullable=False)
     aircraft_id          = Column(Integer, ForeignKey("aircraft.id",  ondelete="SET NULL"), nullable=True)
 
-    # ondelete="SET NULL" — если самолёт удалят, рейс не удаляется, просто aircraft_id станет NULL
+    # ondelete="SET NULL" — without a plane, a flight isn't deleted: aircraft_id - NULL
     status = Column(SAEnum(FlightStatus), default=FlightStatus.SCHEDULED, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 

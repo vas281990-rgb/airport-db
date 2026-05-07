@@ -6,7 +6,7 @@ from app.db.base import Base
 class Ticket(Base):
     __tablename__ = "tickets"
 
-    # защита на уровне БД: одно место на одном рейсе — только один раз
+    # protection in db: one seat on the plane - one time
     __table_args__ = (
         UniqueConstraint("flight_id", "seat_number", name="uq_flight_seat"),
     )
@@ -24,6 +24,6 @@ class Ticket(Base):
     passenger    = relationship("Passenger",    back_populates="tickets")
     flight       = relationship("Flight",       back_populates="tickets")
 
-    # one-to-one → один билет = один посадочный
+    # one-to-one → one ticket = one boarding pass
     boarding_pass = relationship("BoardingPass", back_populates="ticket",
                                  uselist=False, cascade="all, delete")

@@ -9,7 +9,7 @@ class BoardingPass(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    # unique=True делает связь one-to-one на уровне БД
+    # unique=True makes one-to-one in db
     ticket_id = Column(Integer, ForeignKey("tickets.id", ondelete="CASCADE"),
                        unique=True, nullable=False)
 
