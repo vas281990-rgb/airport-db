@@ -1,54 +1,37 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum as SAEnum
 from sqlalchemy.orm import relationship
 from datetime import datetime
-
+import enum
 from app.db.base import Base
 
 
-class Flight(Base):
-    """
-    Flight database model.
-    Represents a flight between two airports.
-    """
+class FlightStatus(str, enum.Enum):
+    """Все возможные статусы рейса."""
+    SCHEDULED = "scheduled"   # запланирован
+    BOARDING  = "boarding"    # идёт посадка
+    DEPARTED  = "departed"    # вылетел
+    ARRIVED   = "arrived"     # прилетел
+    CANCELLED = "cancelled"   # отменён
+    DELAYED   = "delayed"     # задержан
 
+
+class Flight(Base):
     __tablename__ = "flights"
 
-    id = Column(Integer, primary_key=True, index=True)
-
-    # Flight number (e.g. "BA2490")
-    flight_number = Column(String, nullable=False, index=True)
-
-    # Departure time
+    id            = Column(Integer, primary_key=True, index=True)
+    flight_number = Column(String,  nullable=False, index=True)
     departure_time = Column(DateTime, nullable=False)
+    arrival_time   = Column(DateTime, nullable=False)
 
-    # Arrival time
-    arrival_time = Column(DateTime, nullable=False)
+    departure_airport_id = Column(Integer, ForeignKey("airports.id",  ondelete="CASCADE"), nullable=False)
+    arrival_airport_id   = Column(Integer, ForeignKey("airports.id",  ondelete="CASCADE"), nullable=False)
+    aircraft_id          = Column(Integer, ForeignKey("aircraft.id",  ondelete="SET NULL"), nullable=True)
 
-    # Airport IDs
-    departure_airport_id = Column(
-        Integer,
-        ForeignKey("airports.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-
-    arrival_airport_id = Column(
-        Integer,
-        ForeignKey("airports.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-
-    # Relationships
-    departure_airport = relationship(
-        "Airport",
-        foreign_keys=[departure_airport_id],
-        back_populates="departing_flights",
-    )
-
-    arrival_airport = relationship(
-        "Airport",
-        foreign_keys=[arrival_airport_id],
-        back_populates="arriving_flights",
-    )
-
-    # Metadata
+    # ondelete="SET NULL" — если самолёт удалят, рейс не удаляется, просто aircraft_id станет NULL
+    status = Column(SAEnum(FlightStatus), default=FlightStatus.SCHEDULED, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    departure_airport = relationship("Airport",   foreign_keys=[departure_airport_id], back_populates="departing_flights")
+    arrival_airport   = relationship("Airport",   foreign_keys=[arrival_airport_id],   back_populates="arriving_flights")
+    aircraft          = relationship("Aircraft",  back_populates="flights")
+    tickets           = relationship("Ticket",    back_populates="flight", cascade="all, delete")
